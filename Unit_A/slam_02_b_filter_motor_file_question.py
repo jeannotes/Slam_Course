@@ -21,7 +21,23 @@ def filter_step(old_pose, motor_ticks, ticks_to_mm, robot_width,
         # --->>> Use your previous implementation.
         # Think about if you need to modify your old code due to the
         # scanner displacement?
-        
+        old_theta = old_pose[2]
+        theta = old_theta
+        # first convert to body coordinate
+        old_x = old_pose[0] - (scanner_displacement * cos(theta))
+        old_y = old_pose[1] - (scanner_displacement * sin(theta))
+
+        l = motor_ticks[0] * ticks_to_mm
+        r = motor_ticks[1] * ticks_to_mm
+
+        #this is the final body coordinate
+        x = old_x + l * cos(theta)
+        y = old_y + r * sin(theta)
+
+        #finally convert to lidar coordinate ?
+        x = x + (scanner_displacement * cos(old_theta))
+        y = y + (scanner_displacement * sin(old_theta))
+
         return (x, y, theta)
 
     else:
@@ -34,7 +50,22 @@ def filter_step(old_pose, motor_ticks, ticks_to_mm, robot_width,
         #   for the center of the robot.
         # Third, modify the result to get back the LiDAR pose from
         #   your computed center. This is the value you have to return.
+        old_theta = old_pose[2]
+        old_x = old_pose[0] - (scanner_displacement * cos(old_theta))
+        old_y = old_pose[1] - (scanner_displacement * sin(old_theta))
 
+        l = motor_ticks[0] * ticks_to_mm
+        r = motor_ticks[1] * ticks_to_mm
+        alpha = (r-l) / robot_width
+        R = l / alpha
+
+        cx = old_x - (R + robot_width/2) * sin(old_theta)
+        cy = old_y - (R + robot_width/2) * (-cos(old_theta))
+        theta = (old_theta + alpha) % (2 * pi)
+
+        x = cx + (R + robot_width/2)* sin(theta)+ (scanner_displacement * cos(theta))
+        y = cy + (R + robot_width/2)* -cos(theta)+ (scanner_displacement * sin(theta))
+        #well i don't think we should add extra scanner displacement
         return (x, y, theta)
 
 if __name__ == '__main__':
@@ -46,7 +77,7 @@ if __name__ == '__main__':
     ticks_to_mm = 0.349
 
     # Measured width of the robot (wheel gauge), in mm.
-    robot_width = 150.0
+    robot_width = 173.0
 
     # Measured start position.
     pose = (1850.0, 1897.0, 213.0 / 180.0 * pi)

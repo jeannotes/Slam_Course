@@ -9,5 +9,5 @@ if __name__ == '__main__':
     logfile = LegoLogfile()
     logfile.read("robot4_motors.txt")
 
-    for i in range(20):
+    for i in range(40):
         print logfile.motor_ticks[i]
