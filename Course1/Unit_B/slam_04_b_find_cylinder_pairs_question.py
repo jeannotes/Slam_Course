@@ -7,6 +7,10 @@ from lego_robot import *
 from slam_b_library import filter_step
 from slam_04_a_project_landmarks import\
      compute_scanner_cylinders, write_cylinders
+from math import sqrt
+
+def distance(p0, p1):
+    return sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
 
 # Given a list of cylinders (points) and reference_cylinders:
 # For every cylinder, find the closest reference_cylinder and add
@@ -20,6 +24,17 @@ def find_cylinder_pairs(cylinders, reference_cylinders, max_radius):
     # In the loop, if cylinders[i] is closest to reference_cylinders[j],
     # and their distance is below max_radius, then add the
     # tuple (i,j) to cylinder_pairs, i.e., cylinder_pairs.append( (i,j) ).
+    
+    for i in range(len(cylinders)):
+        min = max_radius
+        closest = []
+        for j in range(len(reference_cylinders)):
+            dist = distance(cylinders[i], reference_cylinders[j])
+            if dist <= min and dist <= max_radius:
+                min = dist
+                closest = j
+        if not closest == []:
+            cylinder_pairs.append((i,closest))
 
     return cylinder_pairs
 
