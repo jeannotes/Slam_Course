@@ -26,8 +26,50 @@ def find_cylinders(scan, scan_derivative, jump, min_dist):
     cylinder_list = []
     on_cylinder = False
     sum_ray, sum_depth, rays = 0.0, 0.0, 0
+    direction = 'left'
+    discard = False
 
-    # --->>> Insert here your previous solution from find_cylinders_question.py.
+    for i in xrange(len(scan_derivative)):
+        # --->>> Insert your cylinder code here.
+        # Whenever you find a cylinder, add a tuple
+        # (average_ray, average_depth) to the cylinder_list.
+
+        current_der = scan_derivative[i]
+
+        if (abs(current_der) > jump):
+            if on_cylinder and direction == 'left':
+                if current_der < 0:#left again
+                    discard = True
+                else:
+                    on_cylinder = False
+                    average_ray = sum_ray / rays
+                    average_depth = sum_depth / rays
+                    cylinder_list.append((average_ray, average_depth))
+                    sum_ray, sum_depth, rays = 0.0, 0.0, 0
+                    
+                    # Just for fun, I'll output some cylinders.
+                    # Replace this by your code.
+                    if i % 200 == 0:
+                        cylinder_list.append( (i, scan[i]) )
+                    # Just for fun
+
+            if not on_cylinder and current_der < 0:
+                on_cylinder = True
+                direction = 'left'
+
+        if scan[i] <= min_dist:
+            discard = True
+        
+        if on_cylinder and scan[i] > min_dist:
+            rays += 1
+            sum_ray += i
+            sum_depth += scan[i]        
+
+        if discard:
+            sum_ray, sum_depth, rays = 0.0, 0.0, 0
+            discard = False
+
+        #attention, remove the fun code up (line 48) 
 
     return cylinder_list
 
@@ -38,9 +80,15 @@ def compute_cartesian_coordinates(cylinders, cylinder_offset):
         # c is a tuple (beam_index, range).
         # For converting the beam index to an angle, use
         # LegoLogfile.beam_index_to_angle(beam_index)
-        result.append( (0,0) ) # Replace this by your (x,y)
+        ray_ix = c[0]
+        ray_length = c[1]
+        ray_angle = LegoLogfile.beam_index_to_angle(ray_ix)
+        x = (ray_length + cylinder_offset) * cos(ray_angle)
+        y = (ray_length + cylinder_offset) * sin(ray_angle)
+
+        result.append( (x,y) ) # Replace this by your (x,y)
+
     return result
-        
 
 if __name__ == '__main__':
 

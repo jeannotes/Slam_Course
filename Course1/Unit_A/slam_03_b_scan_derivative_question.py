@@ -32,7 +32,7 @@ if __name__ == '__main__':
     logfile.read("robot4_scan.txt")
 
     # Pick one scan.
-    scan_no = 7
+    scan_no = 235
     scan = logfile.scan_data[scan_no]
 
     # Compute derivative, (-1, 0, 1) mask.
