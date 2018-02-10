@@ -9,5 +9,5 @@ logfile = LegoLogfile()
 logfile.read("robot4_scan.txt")
 
 # Plot one scan.
-plot(logfile.scan_data[8])
+plot(logfile.scan_data[42])
 show()
