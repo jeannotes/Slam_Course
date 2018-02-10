@@ -8,9 +8,7 @@ def move(distribution, delta):
     """Returns a Distribution that has been moved (x-axis) by the amount of
        delta."""
 
-    # --->>> Insert your code here.
-    
-    return distribution  # Replace this by your own result.
+    return Distribution(distribution.offset + delta, distribution.values)
 
 if __name__ == '__main__':
     # List of movements: move 3 times by 20.
