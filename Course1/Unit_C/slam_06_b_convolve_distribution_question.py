@@ -23,13 +23,13 @@ def convolve(a, b):
         dist_lst.append(Distribution(offs, res))
         offs += 1
     c = Distribution.sum(dist_lst)
-    return c  # Replace this by your own result.
+    return c
 
 if __name__ == '__main__':
     arena = (0,1000)
 
     # Move 3 times by 20.
-    moves = [20] * 30
+    moves = [20] * 50
 
     # Start with a known position: probability 1.0 at position 10.
     position = Distribution.unit_pulse(10)

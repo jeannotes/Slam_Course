@@ -45,9 +45,30 @@ class ParticleFilter:
 
     def predict(self, control):
         """The prediction step of the particle filter."""
+        left, right = control
 
-        # --->>> Insert code from previous question here.
-        pass  # Remove this.
+        # Compute left and right variance.
+        alpha_1 = self.control_motion_factor
+        alpha_2 = self.control_turn_factor
+
+        g2l = (alpha_1*left)**2 + (alpha_2*(left-right))**2
+        g2r = (alpha_1*right)**2 + (alpha_2*(left-right))**2
+
+        # Then, do a loop over all self.particles and construct a new
+        # list of particles.
+        new_particles = []
+        for p in self.particles:
+            sample_l = random.gauss(left, sqrt(g2l))
+            sample_r = random.gauss(right, sqrt(g2r))
+            new_particle = self.g(p, (sample_l,sample_r), self.robot_width)
+            #print p, new_particle
+            new_particles.append(new_particle)
+
+        # In the end, assign the new list of particles to self.particles.
+        # For sampling, use random.gauss(mu, sigma). (Note sigma in this call
+        # is the standard deviation, not the variance.)
+
+        self.particles = new_particles
 
     # Measurement. This is exactly the same method as in the Kalman filter.
     @staticmethod
@@ -64,17 +85,25 @@ class ParticleFilter:
         """Given a measurement and a predicted measurement, computes
            probability."""
         # Compute differences to real measurements.
+        d_true, alpha_true = measurement
+        d_pred, alpha_pred = predicted_measurement
 
         # --->>> Compute difference in distance and bearing angle.
+        d_diff = abs(d_pred - d_true)
+        alpha_diff = (alpha_pred - alpha_true + pi) % (2 * pi) - pi
+
         # Important: make sure the angle difference works correctly and does
         # not return values offset by 2 pi or - 2 pi.
         # You may use the following Gaussian PDF function:
         # scipy.stats.norm.pdf(x, mu, sigma). With the import in the header,
         # this is normal_dist.pdf(x, mu, sigma).
+        p_d = normal_dist.pdf(d_diff, 0, self.measurement_distance_stddev)
+        p_alpha = normal_dist.pdf(alpha_diff, 0, self.measurement_angle_stddev)
+
         # Note that the two parameters sigma_d and sigma_alpha discussed
         # in the lecture are self.measurement_distance_stddev and
         # self.measurement_angle_stddev.
-        return 1.0  # Replace this.
+        return p_d * p_alpha
 
     def compute_weights(self, cylinders, landmarks):
         """Computes one weight for each particle, returns list of weights."""
@@ -85,20 +114,40 @@ class ParticleFilter:
             assignment = assign_cylinders(cylinders, p,
                 self.scanner_displacement, landmarks)
 
-            # --->>> Insert code to compute weight for particle p here.
             # This will require a loop over all (measurement, landmark)
             # in assignment. Append weight to the list of weights.
-            weights.append(1.0)  # Replace this.
+            prob = 1.0
+            for e in assignment:
+                true_measurement, landmark = e
+                predicted_measurement = self.h(p,landmark,self.scanner_displacement)
+                prob *= self.probability_of_measurement(true_measurement, predicted_measurement)
+            weights.append(prob)
         return weights
 
     def resample(self, weights):
         """Return a list of particles which have been resampled, proportional
            to the given weights."""
 
-        # --->>> Insert your code here.
         # You may implement the 'resampling wheel' algorithm
         # described in the lecture.
-        new_particles = self.particles  # Replace this.
+        old_particles = self.particles
+        N = len(old_particles)
+        new_particles = []
+        index = random.randint(0, N-1)
+        offset = 0.0
+        #print len(old_particles), len(weights)
+        mw = max(weights)
+        for i in xrange(N):
+            offset += random.uniform(0, 2.0 * mw)
+            #print "beta =", beta
+            while offset > weights[index]:
+                offset -= weights[index]
+                index = (index + 1) % N
+                #print "\tbeta= %f, index = %d, weight = %f" % (beta, index, weights[index])
+            new_particles.append(old_particles[index])
+
+        self.particles = new_particles
+
         return new_particles
 
     def correct(self, cylinders, landmarks):

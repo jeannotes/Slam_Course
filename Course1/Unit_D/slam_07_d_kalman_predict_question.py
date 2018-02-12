@@ -39,17 +39,77 @@ class ExtendedKalmanFilter:
 
     @staticmethod
     def dg_dstate(state, control, w):
+        theta = state[2]
+        l, r = control
+        if r != l:
 
-        # --->>> Copy your previous dg_dstate code here.
+            # --->>> Put your code here.
+            # This is for the case r != l.
+            # g has 3 components and the state has 3 components, so the
+            # derivative of g with respect to all state variables is a
+            # 3x3 matrix. To construct such a matrix in Python/Numpy,
+            # use: m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+            # where 1, 2, 3 are the values of the first row of the matrix.
+            # Don't forget to return this matrix.
+            #m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # Replace this.
 
-        return array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+            alpha = (r - l) / w
+            R = l/alpha
+
+            g1 = (R + (w/2)) * (cos(theta + alpha) - cos(theta))
+            g2 = (R + (w/2)) * (sin(theta + alpha) - sin(theta))
+            m = array([[1.0, 0.0, g1], [0.0, 1.0, g2], [0.0, 0.0, 1.0]])
+        else:
+
+            # --->>> Put your code here.
+            # This is for the special case r == l.
+            #m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # Replace this.
+            m = array([[1.0, 0.0, -l * sin(theta)], [0.0, 1.0, l* cos(theta)], [0.0, 0.0, 1.0]])
+        return m
 
     @staticmethod
     def dg_dcontrol(state, control, w):
+        theta = state[2]
+        l, r = tuple(control)
+        if r != l:
 
-        # --->>> Copy your previous dg_dcontrol code here.
+            # --->>> Put your code here.
+            # This is for the case l != r.
+            # Note g has 3 components and control has 2, so the result
+            # will be a 3x2 (rows x columns) matrix.
+
+            alpha = (r - l) / w
+
+            wr = (w*r)/((r-l)**2)
+            wl = (w*l)/((r-l)**2)
+            r2l = (r+l)/(2*(r-l))
+
+            g1_l = wr * (sin(theta+alpha)-sin(theta)) - r2l * cos(theta+alpha)
+            g2_l = wr * (-cos(theta+alpha)+cos(theta)) - r2l * sin(theta+alpha)
+            g3_l = - (1/w)
+
+            g1_r = -wl * (sin(theta+alpha)-sin(theta)) + r2l * cos(theta+alpha)
+            g2_r = -wl * (-cos(theta+alpha)+cos(theta)) + r2l * sin(theta+alpha)
+            g3_r = 1 / w 
+
+            m = array([[g1_l, g1_r], [g2_l, g2_r], [g3_l, g3_r]])
             
-        return array([[1, 2], [3, 4], [5, 6]])
+            
+        else:
+
+            # --->>> Put your code here.
+            # This is for the special case l == r.
+            g1_l = .5 * (cos(theta) + (l/w)*sin(theta))
+            g2_l = .5 * (sin(theta) - (l/w)*cos(theta))
+            g3_l = - 1/w
+
+            g1_r = .5 * ((-l/w)*sin(theta) + cos(theta))
+            g2_r = .5 * ((l/w)*cos(theta) + sin(theta))
+            g3_r = 1 / w 
+
+            m = array([[g1_l, g1_r], [g2_l, g2_r], [g3_l, g3_r]])            
+
+        return m
 
     @staticmethod
     def get_error_ellipse(covariance):
@@ -69,6 +129,22 @@ class ExtendedKalmanFilter:
         # Covariance in control space depends on move distance.
         left, right = control
 
+        alpha_1 = self.control_motion_factor
+        alpha_2 = self.control_turn_factor
+
+        g2l = (alpha_1 * left)**2 + (alpha_2 * (left-right))**2
+        g2r = (alpha_1 * right)**2 + (alpha_2 * (left-right))**2
+
+        Sigma_control = diag([g2l,g2r])
+        Vt = self.dg_dcontrol( self.state,control,self.robot_width )#!!
+        VtT = Vt.T
+
+        Sigma_covariance = self.covariance
+        Gt = self.dg_dstate( self.state,control,self.robot_width )#!!
+        GtT = Gt.T
+
+        self.covariance = dot(dot(Gt,Sigma_covariance),GtT) + dot(dot(Vt,Sigma_control),VtT)
+
         # --->>> Put your code to compute the new self.covariance here.
         # First, construct the control_covariance, which is a diagonal matrix.
         # In Python/Numpy, you may use diag([a, b]) to get
@@ -84,7 +160,7 @@ class ExtendedKalmanFilter:
         # state' = g(state, control)
 
         # --->>> Put your code to compute the new self.state here.
-
+        self.state = self.g(self.state,control,self.robot_width)
 
 if __name__ == '__main__':
     # Robot constants.

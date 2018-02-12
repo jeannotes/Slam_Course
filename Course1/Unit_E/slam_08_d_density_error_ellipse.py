@@ -20,9 +20,188 @@ from scipy.stats import norm as normal_dist
 
 
 class ParticleFilter:
+    def __init__(self, initial_particles,
+                 robot_width, scanner_displacement,
+                 control_motion_factor, control_turn_factor,
+                 measurement_distance_stddev, measurement_angle_stddev):
+        # The particles.
+        self.particles = initial_particles
 
-    # --->>> Copy all the methods from the previous solution here.
-    # These are methods from __init__() to get_mean().
+        # Some constants.
+        self.robot_width = robot_width
+        self.scanner_displacement = scanner_displacement
+        self.control_motion_factor = control_motion_factor
+        self.control_turn_factor = control_turn_factor
+        self.measurement_distance_stddev = measurement_distance_stddev
+        self.measurement_angle_stddev = measurement_angle_stddev
+
+    # State transition. This is exactly the same method as in the Kalman filter.
+    @staticmethod
+    def g(state, control, w):
+        x, y, theta = state
+        l, r = control
+        if r != l:
+            alpha = (r - l) / w
+            rad = l/alpha
+            g1 = x + (rad + w/2.)*(sin(theta+alpha) - sin(theta))
+            g2 = y + (rad + w/2.)*(-cos(theta+alpha) + cos(theta))
+            g3 = (theta + alpha + pi) % (2*pi) - pi
+        else:
+            g1 = x + l * cos(theta)
+            g2 = y + l * sin(theta)
+            g3 = theta
+
+        return (g1, g2, g3)
+
+    def predict(self, control):
+        """The prediction step of the particle filter."""
+        left, right = control
+
+        # Compute left and right variance.
+        alpha_1 = self.control_motion_factor
+        alpha_2 = self.control_turn_factor
+
+        g2l = (alpha_1*left)**2 + (alpha_2*(left-right))**2
+        g2r = (alpha_1*right)**2 + (alpha_2*(left-right))**2
+
+        # Then, do a loop over all self.particles and construct a new
+        # list of particles.
+        new_particles = []
+        for p in self.particles:
+            sample_l = random.gauss(left, sqrt(g2l))
+            sample_r = random.gauss(right, sqrt(g2r))
+            new_particle = self.g(p, (sample_l,sample_r), self.robot_width)
+            #print p, new_particle
+            new_particles.append(new_particle)
+
+        # In the end, assign the new list of particles to self.particles.
+        # For sampling, use random.gauss(mu, sigma). (Note sigma in this call
+        # is the standard deviation, not the variance.)
+
+        self.particles = new_particles
+
+
+    # Measurement. This is exactly the same method as in the Kalman filter.
+    @staticmethod
+    def h(state, landmark, scanner_displacement):
+        """Takes a (x, y, theta) state and a (x, y) landmark, and returns the
+           corresponding (range, bearing)."""
+        dx = landmark[0] - (state[0] + scanner_displacement * cos(state[2]))
+        dy = landmark[1] - (state[1] + scanner_displacement * sin(state[2]))
+        r = sqrt(dx * dx + dy * dy)
+        alpha = (atan2(dy, dx) - state[2] + pi) % (2*pi) - pi
+        return (r, alpha)
+
+    def probability_of_measurement(self, measurement, predicted_measurement):
+        """Given a measurement and a predicted measurement, computes
+           probability."""
+        # Compute differences to real measurements.
+        d_true, alpha_true = measurement
+        d_pred, alpha_pred = predicted_measurement
+
+        # --->>> Compute difference in distance and bearing angle.
+        d_diff = abs(d_pred - d_true)
+        alpha_diff = (alpha_pred - alpha_true + pi) % (2 * pi) - pi
+
+        # Important: make sure the angle difference works correctly and does
+        # not return values offset by 2 pi or - 2 pi.
+        # You may use the following Gaussian PDF function:
+        # scipy.stats.norm.pdf(x, mu, sigma). With the import in the header,
+        # this is normal_dist.pdf(x, mu, sigma).
+        p_d = normal_dist.pdf(d_diff, 0, self.measurement_distance_stddev)
+        p_alpha = normal_dist.pdf(alpha_diff, 0, self.measurement_angle_stddev)
+
+        # Note that the two parameters sigma_d and sigma_alpha discussed
+        # in the lecture are self.measurement_distance_stddev and
+        # self.measurement_angle_stddev.
+        return p_d * p_alpha
+
+
+    def compute_weights(self, cylinders, landmarks):
+        """Computes one weight for each particle, returns list of weights."""
+        weights = []
+        for p in self.particles:
+            # Get list of tuples:
+            # [ ((range_0, bearing_0), (landmark_x, landmark_y)), ... ]
+            assignment = assign_cylinders(cylinders, p,
+                self.scanner_displacement, landmarks)
+
+            # This will require a loop over all (measurement, landmark)
+            # in assignment. Append weight to the list of weights.
+            prob = 1.0
+            for e in assignment:
+                true_measurement, landmark = e
+                predicted_measurement = self.h(p,landmark,self.scanner_displacement)
+                prob *= self.probability_of_measurement(true_measurement, predicted_measurement)
+            weights.append(prob)
+        return weights
+
+
+    def resample(self, weights):
+        """Return a list of particles which have been resampled, proportional
+           to the given weights."""
+
+        # You may implement the 'resampling wheel' algorithm
+        # described in the lecture.
+        old_particles = self.particles
+        N = len(old_particles)
+        new_particles = []
+        index = random.randint(0, N-1)
+        offset = 0.0
+        #print len(old_particles), len(weights)
+        mw = max(weights)
+        for i in xrange(N):
+            offset += random.uniform(0, 2.0 * mw)
+            #print "beta =", beta
+            while offset > weights[index]:
+                offset -= weights[index]
+                index = (index + 1) % N
+                #print "\tbeta= %f, index = %d, weight = %f" % (beta, index, weights[index])
+            new_particles.append(old_particles[index])
+
+        self.particles = new_particles
+
+        return new_particles
+
+
+    def correct(self, cylinders, landmarks):
+        """The correction step of the particle filter."""
+        # First compute all weights.
+        weights = self.compute_weights(cylinders, landmarks)
+        # Then resample, based on the weight array.
+        self.particles = self.resample(weights)
+
+    def print_particles(self, file_desc):
+        """Prints particles to given file_desc output."""
+        if not self.particles:
+            return
+        print >> file_desc, "PA",
+        for p in self.particles:
+            print >> file_desc, "%.0f %.0f %.3f" % p,
+        print >> file_desc
+
+    def get_mean(self):
+        """Compute mean position and heading from all particles."""
+
+        # --->>> This is the new code you'll have to implement.
+        particles = self.particles
+        M = len(particles)
+        sum_x = 0.0
+        sum_y = 0.0
+        sum_vx = 0.0
+        sum_vy = 0.0
+        for p in particles:
+            sum_x += p[0]
+            sum_y += p[1]
+            sum_vx += cos(p[2])
+            sum_vy += sin(p[2])
+        mean_x = sum_x / M
+        mean_y = sum_y / M
+        mean_heading = atan2(sum_vy, sum_vx)
+
+        # Return a tuple: (mean_x, mean_y, mean_heading).
+        return (mean_x, mean_y, mean_heading)
+
 
     # *** Modification 1: Extension: This computes the error ellipse.
     def get_error_ellipse_and_heading_variance(self, mean):
