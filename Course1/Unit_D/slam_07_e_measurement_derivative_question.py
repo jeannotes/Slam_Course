@@ -29,9 +29,26 @@ class ExtendedKalmanFilter:
         # x y theta is state[0] state[1] state[2]
         # x_m y_m is landmark[0] landmark[1]
         # The Jacobian of h is a 2x3 matrix.
+        x, y, theta =  state
+        x_m, y_m = landmark
 
-        return array([[1, 2, 3], [4, 5, 6]]) # Replace this.
+        x_e = x + scanner_displacement * cos(theta)
+        y_e = y + scanner_displacement * sin(theta)
 
+        delta_x = x_m - x_e
+        delta_y = y_m - y_e
+
+        q = (delta_x)**2 + (delta_y)**2
+        
+        dr_dx = -delta_x / sqrt(q)
+        dr_dy = -delta_y / sqrt(q)
+        dr_dtheta = (scanner_displacement / sqrt(q))*(delta_x*sin(theta) - delta_y*cos(theta))
+
+        dalpha_dx = delta_y / q
+        dalpha_dy = -delta_x / q
+        dalpha_dtheta = - (scanner_displacement/q) * (delta_x * cos(theta) + delta_y * sin(theta)) -1
+
+        return array([[dr_dx, dr_dy, dr_dtheta], [dalpha_dx, dalpha_dy, dalpha_dtheta]]) # Replace this.
 
 if __name__ == '__main__':
     # If the partial derivative with respect to x, y, theta (the state)

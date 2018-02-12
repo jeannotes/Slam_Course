@@ -11,11 +11,32 @@ def move(distribution, delta):
        delta."""
     return Distribution(distribution.offset + delta, distribution.values)
 
+def multiply(a, b):
+    """Multiply two distributions and return the resulting distribution."""
+    start = min(a.start(), b.start())
+    stop = max(a.stop(), b.stop())
+    mul_dist = []
+    for ix in range(start, stop):
+        mul_dist.append(a.value(ix) * b.value(ix))
+    d = Distribution(start, mul_dist)
+    Distribution.normalize(d)
+    return d
 
-
-# --->>> Copy your convolve(a, b) and multiply(a, b) functions here.
-
-
+def convolve(a, b):
+    """Convolve distribution a and b and return the resulting new distribution."""
+    dist_lst = []
+    offs = (a.offset + b.offset)
+    #a.offset -> the most left
+    #b.offset -> the most left
+    #the worst:first at leftest, and most very slow(smallest one)
+    for a_val in a.values:
+        res = []
+        for b_val in b.values:
+            res.append(a_val * b_val)
+        dist_lst.append(Distribution(offs, res))
+        offs += 1
+    c = Distribution.sum(dist_lst)
+    return c
 
 if __name__ == '__main__':
     arena = (0,220)

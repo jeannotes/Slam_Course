@@ -36,17 +36,36 @@ class ExtendedKalmanFilter:
             # This is for the case l != r.
             # Note g has 3 components and control has 2, so the result
             # will be a 3x2 (rows x columns) matrix.
-            pass  # Remove this.
-            
+            alpha = (r - l) / w
+
+            wr = (w*r)/((r-l)**2)
+            wl = (w*l)/((r-l)**2)
+            r2l = (r+l)/(2*(r-l))
+
+            g1_l = wr * (sin(theta+alpha)-sin(theta)) - r2l * cos(theta+alpha)
+            g2_l = wr * (-cos(theta+alpha)+cos(theta)) - r2l * sin(theta+alpha)
+            g3_l = - (1/w)
+
+            g1_r = -wl * (sin(theta+alpha)-sin(theta)) + r2l * cos(theta+alpha)
+            g2_r = -wl * (-cos(theta+alpha)+cos(theta)) + r2l * sin(theta+alpha)
+            g3_r = 1 / w 
+
+            m = array([[g1_l, g1_r], [g2_l, g2_r], [g3_l, g3_r]])
             
         else:
 
             # --->>> Put your code here.
             # This is for the special case l == r.
-            pass  # Remove this.            
+            g1_l = .5 * (cos(theta) + (l/w)*sin(theta))
+            g2_l = .5 * (sin(theta) - (l/w)*cos(theta))
+            g3_l = - 1/w
 
-        m = array([[1, 2], [3, 4], [5, 6]])  # Remove this.
-            
+            g1_r = .5 * ((-l/w)*sin(theta) + cos(theta))
+            g2_r = .5 * ((l/w)*cos(theta) + sin(theta))
+            g3_r = 1 / w 
+
+            m = array([[g1_l, g1_r], [g2_l, g2_r], [g3_l, g3_r]]) 
+
         return m
 
 

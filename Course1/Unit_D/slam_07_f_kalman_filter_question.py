@@ -44,15 +44,79 @@ class ExtendedKalmanFilter:
 
     @staticmethod
     def dg_dstate(state, control, w):
+        theta = state[2]
+        l, r = control
+        if r != l:
 
-        # --->>> Put your method from 07_d_kalman_predict here.
-        pass # Remove this.
+            # --->>> Put your code here.
+            # This is for the case r != l.
+            # g has 3 components and the state has 3 components, so the
+            # derivative of g with respect to all state variables is a
+            # 3x3 matrix. To construct such a matrix in Python/Numpy,
+            # use: m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+            # where 1, 2, 3 are the values of the first row of the matrix.
+            # Don't forget to return this matrix.
+            #m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # Replace this.
+
+            alpha = (r - l) / w
+            R = l/alpha
+
+            g1 = (R + (w/2)) * (cos(theta + alpha) - cos(theta))
+            g2 = (R + (w/2)) * (sin(theta + alpha) - sin(theta))
+            m = array([[1.0, 0.0, g1], [0.0, 1.0, g2], [0.0, 0.0, 1.0]])
+        else:
+
+            # --->>> Put your code here.
+            # This is for the special case r == l.
+            #m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # Replace this.
+            m = array([[1.0, 0.0, -l * sin(theta)], [0.0, 1.0, l* cos(theta)], [0.0, 0.0, 1.0]])
+        return m
 
     @staticmethod
     def dg_dcontrol(state, control, w):
+        theta = state[2]
+        l, r = tuple(control)
+        if r != l:
 
-        # --->>> Put your method from 07_d_kalman_predict here.
-        pass # Remove this.
+            # --->>> Put your code here.
+            # This is for the case l != r.
+            # Note g has 3 components and control has 2, so the result
+            # will be a 3x2 (rows x columns) matrix.
+
+            alpha = (r - l) / w
+
+            wr = (w*r)/((r-l)**2)
+            wl = (w*l)/((r-l)**2)
+            r2l = (r+l)/(2*(r-l))
+
+            g1_l = wr * (sin(theta+alpha)-sin(theta)) - r2l * cos(theta+alpha)
+            g2_l = wr * (-cos(theta+alpha)+cos(theta)) - r2l * sin(theta+alpha)
+            g3_l = - (1/w)
+
+            g1_r = -wl * (sin(theta+alpha)-sin(theta)) + r2l * cos(theta+alpha)
+            g2_r = -wl * (-cos(theta+alpha)+cos(theta)) + r2l * sin(theta+alpha)
+            g3_r = 1 / w 
+
+            m = array([[g1_l, g1_r], [g2_l, g2_r], [g3_l, g3_r]])
+            
+            
+        else:
+
+            # --->>> Put your code here.
+            # This is for the special case l == r.
+            g1_l = .5 * (cos(theta) + (l/w)*sin(theta))
+            g2_l = .5 * (sin(theta) - (l/w)*cos(theta))
+            g3_l = - 1/w
+
+            g1_r = .5 * ((-l/w)*sin(theta) + cos(theta))
+            g2_r = .5 * ((l/w)*cos(theta) + sin(theta))
+            g3_r = 1 / w 
+
+            m = array([[g1_l, g1_r], [g2_l, g2_r], [g3_l, g3_r]])            
+
+        #m = array([[1, 2], [3, 4], [5, 6]])  # Remove this.
+            
+        return m
 
     @staticmethod
     def get_error_ellipse(covariance):
@@ -66,9 +130,44 @@ class ExtendedKalmanFilter:
         return (angle, sqrt(eigenvals[0]), sqrt(eigenvals[1]))        
 
     def predict(self, control):
+        """The prediction step of the Kalman filter."""
+        # covariance' = G * covariance * GT + R
+        # where R = V * (covariance in control space) * VT.
+        # Covariance in control space depends on move distance.
+        left, right = control
 
-        # --->>> Put your method from 07_d_kalman_predict here.
-        pass # Remove this.
+        alpha_1 = self.control_motion_factor
+        alpha_2 = self.control_turn_factor
+
+        g2l = (alpha_1 * left)**2 + (alpha_2 * (left-right))**2
+        g2r = (alpha_1 * right)**2 + (alpha_2 * (left-right))**2
+
+        Sigma_control = diag([g2l,g2r])
+        Vt = self.dg_dcontrol( self.state,control,self.robot_width )#!!
+        VtT = Vt.T
+
+        Sigma_covariance = self.covariance
+        Gt = self.dg_dstate( self.state,control,self.robot_width )#!!
+        GtT = Gt.T
+
+        self.covariance = dot(dot(Gt,Sigma_covariance),GtT) + dot(dot(Vt,Sigma_control),VtT)
+
+        # --->>> Put your code to compute the new self.covariance here.
+        # First, construct the control_covariance, which is a diagonal matrix.
+        # In Python/Numpy, you may use diag([a, b]) to get
+        # [[ a, 0 ],
+        #  [ 0, b ]].
+        # Then, compute G using dg_dstate and V using dg_dcontrol.
+        # Then, compute the new self.covariance.
+        # Note that the transpose of a Numpy array G is expressed as G.T,
+        # and the matrix product of A and B is written as dot(A, B).
+        # Writing A*B instead will give you the element-wise product, which
+        # is not intended here.
+
+        # state' = g(state, control)
+
+        # --->>> Put your code to compute the new self.state here.
+        self.state = self.g(self.state,control,self.robot_width)
 
     @staticmethod
     def h(state, landmark, scanner_displacement):
@@ -84,8 +183,32 @@ class ExtendedKalmanFilter:
     @staticmethod
     def dh_dstate(state, landmark, scanner_displacement):
 
-        # --->>> Put your method from 07_e_measurement derivative here.
-        pass # Remove this.
+        # --->>> Insert your code here.
+        # Note that:
+        # x y theta is state[0] state[1] state[2]
+        # x_m y_m is landmark[0] landmark[1]
+        # The Jacobian of h is a 2x3 matrix.
+        x, y, theta =  state
+        x_m, y_m = landmark
+
+        x_e = x + scanner_displacement * cos(theta)
+        y_e = y + scanner_displacement * sin(theta)
+
+        delta_x = x_m - x_e
+        delta_y = y_m - y_e
+
+        q = (delta_x)**2 + (delta_y)**2
+        
+        dr_dx = -delta_x / sqrt(q)
+        dr_dy = -delta_y / sqrt(q)
+        dr_dtheta = (scanner_displacement / sqrt(q))*(delta_x*sin(theta) - delta_y*cos(theta))
+
+        dalpha_dx = delta_y / q
+        dalpha_dy = -delta_x / q
+        dalpha_dtheta = - (scanner_displacement/q) * (delta_x * cos(theta) + delta_y * sin(theta)) -1
+
+
+        return array([[dr_dx, dr_dy, dr_dtheta], [dalpha_dx, dalpha_dy, dalpha_dtheta]]) # Replace this.
 
     def correct(self, measurement, landmark):
         """The correction step of the Kalman filter."""
@@ -113,8 +236,34 @@ class ExtendedKalmanFilter:
         # A.T is the transposed of a matrix A (A itself is not modified).
         # linalg.inv(A) returns the inverse of A (A itself is not modified).
         # eye(3) returns a 3x3 identity matrix.
+        Ht = self.dh_dstate( self.state, landmark, self.scanner_displacement )
+        HtT =  Ht.T
 
-        pass # Remove this.
+        # Q, a diagonal matrix, from self.measurement_distance_stddev and
+        #  self.measurement_angle_stddev (remember: Q contains variances).
+        g1 = (self.measurement_distance_stddev)**2
+        g2 = (self.measurement_angle_stddev)**2
+        Q = diag([ g1, g2 ])
+        
+        # K, from self.covariance, H, and Q.
+        Sigma_t = self.covariance
+        Kt =  dot(Sigma_t, dot(HtT, linalg.inv(dot(dot(Ht, Sigma_t), HtT) + Q)))
+
+        #  Use linalg.inv(...) to compute the inverse of a matrix.
+        
+        # The innovation: it is easy to make an error here, because the
+        #  predicted measurement and the actual measurement of theta may have
+        #  an offset of +/- 2 pi. So here is a suggestion:
+        innovation = array(measurement) - self.h(self.state, landmark, self.scanner_displacement)
+        innovation[1] = (innovation[1] + pi) % (2*pi) - pi
+
+        # Then, you'll have to compute the new self.state.
+        mu_t = self.state + dot(Kt, innovation)
+        self.state = mu_t
+
+        # And finally, compute the new self.covariance. Use eye(3) to get a 3x3
+        #  identity matrix.
+        self.covariance = dot( (eye(3) - dot(Kt,Ht)), Sigma_t)
 
 if __name__ == '__main__':
     # Robot constants.

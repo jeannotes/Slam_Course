@@ -6,10 +6,14 @@ from distribution import *
 
 def multiply(a, b):
     """Multiply two distributions and return the resulting distribution."""
-
-    # --->>> Put your code here.
-    
-    return a  # Modify this to return your result.
+    start = min(a.start(), b.start())
+    stop = max(a.stop(), b.stop())
+    mul_dist = []
+    for ix in range(start, stop):
+        mul_dist.append(a.value(ix) * b.value(ix))
+    d = Distribution(start, mul_dist)
+    Distribution.normalize(d)
+    return d
 
 
 if __name__ == '__main__':
