@@ -114,3 +114,7 @@ def get_observations(scan, jump, min_dist, cylinder_offset,
         result.append(((distance, angle), (x, y), (xs, ys), best_index))
 
     return result
+    #note that it already find some landmarks, and find some new ones
+    #so just it compares with some exist ones, if some existing one's distance is
+    #smaller than the new one, then it should be added
+    #so the rule is alwayes find the best one
