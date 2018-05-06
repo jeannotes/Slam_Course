@@ -62,5 +62,7 @@ for(t=1:size(poses,1))
 	map += mapUpdate;
 	
 	% Plot current map and robot trajectory so far.
-  plot_map(map, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t);
+	plot_map(map, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t);
+	% most importantly, it is just building map, the computing method is relatively simple, 
+	% if it is hit, give it a probability(probOcc), if it is not, git it (probFree)
 endfor
