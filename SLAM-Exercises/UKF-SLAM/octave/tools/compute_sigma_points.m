@@ -8,6 +8,9 @@ global scale;
 
 % Compute lambda
 n = length(mu);
+% here pay attention, at first, ony three vectors (x,y, theta)
+% after that upon finding new landmarks, we just add it into the state
+% vector
 num_sig = 2*n+1;
 lambda = scale - n;
 

@@ -16,7 +16,8 @@ global scale;
 
 % Number of measurements in this time step
 m = size(z, 2);
-
+% note: z is all the landmarks
+disp(size(z))
 % Measurement noise
 Q = 0.01*eye(2);
 
@@ -44,10 +45,12 @@ for i = 1:m
     % extract the current location of the landmark for each sigma point
     % Use this for computing an expected measurement, i.e., applying the h function
 	landmarkIndex = find(map==(z(i).id));
+	disp('zi---id')
+	disp(z(i).id)
 	landmarkXs = sigma_points(2*landmarkIndex + 2, :);
 	landmarkYs = sigma_points(2*landmarkIndex + 3, :);
 
-	% TODO: Compute z_points (2x2n+1), which consists of predicted measurements from all sigma points
+	% Compute z_points (2x2n+1), which consists of predicted measurements from all sigma points
     % This corresponds to line 7 on slide 32
 	
     z_points = [sqrt((landmarkXs - sigma_points(1,:)).^2 + (landmarkYs - sigma_points(2,:)).^2);

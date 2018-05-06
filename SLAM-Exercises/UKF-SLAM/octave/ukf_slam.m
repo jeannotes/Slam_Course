@@ -41,7 +41,7 @@ showGui = true;  % show a window while the algorithm runs
 % Perform filter update for each odometry-observation pair read from the
 % data file.
 for t = 1:size(data.timestep, 2)
-    disp('Time step t ='), disp(t)
+    %disp('Time step t ='), disp(t)
 
     % Perform the prediction step of the UKF
     [mu, sigma] = prediction_step(mu, sigma, data.timestep(t).odometry);
@@ -51,8 +51,8 @@ for t = 1:size(data.timestep, 2)
 
     %Generate visualization plots of the current state of the filter
     plot_state(mu, sigma, landmarks, t, map, data.timestep(t).sensor, showGui);
-    disp("Current state vector mu ="), disp(mu)
-    disp("Map contains the following landmarks:"), disp(map)
+    %disp("Current state vector mu ="), disp(mu)
+    %disp("Map contains the following landmarks:"), disp(map)
 
 endfor
 
