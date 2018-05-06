@@ -2,7 +2,8 @@ function plot_map(map, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gri
 
 	close all
 %	figure 
-figure(1, "visible", "off");
+%figure(1, "visible", "off");
+figure(1); 
 	axis(mapBox);
 	hold on;
 	map = map';

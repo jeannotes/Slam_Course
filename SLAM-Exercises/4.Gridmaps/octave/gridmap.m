@@ -10,7 +10,7 @@ load("../data/laser")
 % Extract robot poses: Nx3 matrix where each row is in the form: [x y theta]
 poses = [laser.pose];
 poses = reshape(poses,3,size(poses,2)/3)';
-
+disp(poses)
 % Initial cell occupancy probability.
 prior = 0.50;
 % Probabilities related to the laser range finder sensor model.
@@ -29,8 +29,8 @@ robYMax = max(poses(:,2));
 mapBox = [robXMin-border robXMax+border robYMin-border robYMax+border];
 offsetX = mapBox(1);
 offsetY = mapBox(3);
-mapSizeMeters = [mapBox(2)-offsetX mapBox(4)-offsetY];
-mapSize = ceil([mapSizeMeters/gridSize]);
+mapSizeMeters = [mapBox(2)-offsetX mapBox(4)-offsetY];%width height
+mapSize = ceil([mapSizeMeters/gridSize]); %final map width & height(how many grids)
 
 % Used when updating the map. Assumes that prob_to_log_odds.m
 % has been implemented correctly.
@@ -60,5 +60,5 @@ for(t=1:size(poses,1))
 	map += mapUpdate;
 	
 	% Plot current map and robot trajectory so far.
-    plot_map(map, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t);
+  plot_map(map, mapBox, robPoseMapFrame, poses, laserEndPntsMapFrame, gridSize, offset, t);
 endfor
