@@ -26,6 +26,7 @@ for i = 1:numParticles
   particles(i).pose(1) = particles(i).pose(1) + trans*cos(particles(i).pose(3) + r1);
   particles(i).pose(2) = particles(i).pose(2) + trans*sin(particles(i).pose(3) + r1);
   particles(i).pose(3) = normalize_angle(particles(i).pose(3) + r1 + r2);
+  % attention, robot pose is accumulated
 end
 
 end

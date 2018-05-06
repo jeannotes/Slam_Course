@@ -39,7 +39,7 @@ for i = 1:numParticles
       % get the Jacobian with respect to the landmark position
       [h, H] = measurement_model(particles(i), z(j));
 
-      % TODO: initialize the EKF for this landmark
+      % initialize the EKF for this landmark
       invH = inv(H);
       particles(i).landmarks(l).sigma = invH * Q_t * invH';
 
@@ -52,21 +52,21 @@ for i = 1:numParticles
       [expectedZ, H] = measurement_model(particles(i), z(j));
       sigma = particles(i).landmarks(l).sigma;
 
-      % TODO: compute the measurement covariance
+      % compute the measurement covariance
       Q = H * sigma * H' + Q_t;
 
-      % TODO: calculate the Kalman gain
+      % calculate the Kalman gain
       K = sigma * H' * inv(Q);
 
-      % TODO: compute the error between the z and expectedZ (remember to normalize the angle)
+      % compute the error between the z and expectedZ (remember to normalize the angle)
       zdiff = [z(j).range; z(j).bearing] - expectedZ;
       zdiff(2) = normalize_angle(zdiff(2));
 
-      % TODO: update the mean and covariance of the EKF for this landmark
+      % update the mean and covariance of the EKF for this landmark
       particles(i).landmarks(l).mu += K * zdiff;
       particles(i).landmarks(l).sigma = (eye(2) - K * H) * sigma;
 
-      % TODO: compute the likelihood of this observation, multiply with the former weight
+      % compute the likelihood of this observation, multiply with the former weight
       % to account for observing several features in one time step
       particles(i).weight = particles(i).weight * ...
                             1/sqrt(det(2*pi*Q)) * exp( -1/2 * zdiff' * inv(Q) * zdiff);
