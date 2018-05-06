@@ -18,8 +18,13 @@ for i = 1:numParticles
 
     % append the old position to the history of the particle
     particles(i).history{end+1} = particles(i).pose;
-  
-    % TODO: sample a new pose for the particle
+
+    % here, we have two rotations, I guess it should be like this, the 
+    % robot is at some place, then it rotate first, and then translate
+    % after that it rotate again, visually speaking, it's like this
+    % rotate --> translate --> rotate
+
+    % sample a new pose for the particle
     r1 = normalize_angle(normrnd(u.r1, r1Noise));
     t  = normrnd(u.t, transNoise);
     r2 = normalize_angle(normrnd(u.r2, r2Noise));
