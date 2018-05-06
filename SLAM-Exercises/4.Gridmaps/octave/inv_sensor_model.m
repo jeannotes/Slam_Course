@@ -23,7 +23,7 @@ mapUpdate = zeros(size(map));
 % Robot pose as a homogeneous transformation matrix.
 robTrans = v2t(robPose);
 
-% TODO: compute robPoseMapFrame. Use your world_to_map_coordinates implementation.
+% compute robPoseMapFrame. Use your world_to_map_coordinates implementation.
 robPoseMapFrame = world_to_map_coordinates(robPose(1:2), gridSize, offset);
 robPoseMapFrame = [robPoseMapFrame; robPose(3)];
 
@@ -64,5 +64,7 @@ mapUpdate(sub2ind( size(mapUpdate), freeCells(1,:), freeCells(2,:) )) = prob_to_
 
 %TODO: update the log odds values in mapUpdate for each laser endpoint according to probOcc.
 mapUpdate(sub2ind( size(mapUpdate), laserEndPntsMapFrame(1,:), laserEndPntsMapFrame(2,:) )) = prob_to_log_odds(probOcc);
-
+% I think I understand the inside idea, lines above corresponding to p24 in the ppt
+% we use bresenham's method to find free cells, then we give the probability of probFree
+% in those areas that is hit by laser, we give the probability of probOcc
 end

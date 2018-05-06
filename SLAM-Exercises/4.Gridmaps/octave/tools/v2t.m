@@ -1,4 +1,4 @@
-#computes the homogeneous transform matrix A of the pose vector v
+%computes the homogeneous transform matrix A of the pose vector v
 function A=v2t(v)
   	c=cos(v(3));
   	s=sin(v(3));
