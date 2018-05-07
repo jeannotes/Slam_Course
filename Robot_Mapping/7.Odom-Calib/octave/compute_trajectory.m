@@ -10,7 +10,7 @@ function T = compute_trajectory(U)
   % the current pose in the chain
   currentPose = v2t(T(1, :));
 
-  % TODO: compute the result of chaining up the odometry deltas
+  % compute the result of chaining up the odometry deltas
   % Note that U(i) results in T(i+1).
   % T(i+1) can be computed by calling t2v(currentPose)
   % after computing the current pose of the robot
