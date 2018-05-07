@@ -25,7 +25,7 @@ for eid = 1:length(g.edges)
     x = g.x(edge.fromIdx:edge.fromIdx+2);  % the robot pose
     l = g.x(edge.toIdx:edge.toIdx+1);      % the landmark
 
-    %TODO compute the error of the constraint and add it to Fx.
+    % compute the error of the constraint and add it to Fx.
     % Use edge.measurement and edge.information to access the
     % measurement and the information matrix respectively.
     Ti = vt2(x); Ri = Ti(1:3, 1:3); ti = Ti(1:2, 3);
