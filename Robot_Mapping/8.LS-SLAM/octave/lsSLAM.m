@@ -34,8 +34,11 @@ for i = 1:numIterations
   printf('Performing iteration %d\n', i);
 
   dx = linearize_and_solve(g);
-
-  % TODO: apply the solution to the state vector g.x
+  % this is offline-graph slam, we already have poses(not the best poses), we 
+  % also have pose-pose constraint and pose-landmark constraint, so we can build
+  % the to-optimize formulation, after "linearize_and_solve", we have dx,
+  % this is what we need to add in g.x, which is the original robot pose
+  % apply the solution to the state vector g.x
   g.x = g.x + dx;
 
   % plot the current state of the graph
