@@ -6,5 +6,5 @@ CXX_FLAGS =
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/jean/Documents/learning/Slam_Course/cmake-demo/Demo4/build -I/home/jean/Documents/learning/Slam_Course/cmake-demo/Demo4/math 
+CXX_INCLUDES = -I/home/jean/Documents/learning/Slam_Course/cmake-demo/Demo4/build 
 

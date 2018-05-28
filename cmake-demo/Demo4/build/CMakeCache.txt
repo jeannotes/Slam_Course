@@ -174,7 +174,7 @@ demo4_BINARY_DIR:STATIC=/home/jean/Documents/learning/Slam_Course/cmake-demo/Dem
 //Value Computed by CMake
 demo4_SOURCE_DIR:STATIC=/home/jean/Documents/learning/Slam_Course/cmake-demo/Demo4
 
-//use math function provided
+//use math provided
 use_math:BOOL=ON
 
 

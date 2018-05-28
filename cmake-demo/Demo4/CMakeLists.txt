@@ -6,16 +6,17 @@ configure_file(
   "${PROJECT_BINARY_DIR}/config.h"
 )
 
-include_directories("${PROJECT_BINARY_DIR}")
-
 option(use_math
-  "use math function provided" ON
+"use math provided" ON
 )
 
+include_directories("${PROJECT_BINARY_DIR}")
+
 if(use_math)
-  include_directories(math)
   add_subdirectory(math)
-  set(extra ${extra} MathFunctions) 
+  #include_directories(math)
+  # well seems no need to add this .
+  set(extra ${extra} MathFunctions)
 endif(use_math)
 
 add_executable(demo4 main.cc)

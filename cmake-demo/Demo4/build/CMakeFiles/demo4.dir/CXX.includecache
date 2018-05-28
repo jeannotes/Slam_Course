@@ -6,8 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../math/MathFunctions.h
-
 /home/jean/Documents/learning/Slam_Course/cmake-demo/Demo4/main.cc
 stdio.h
 -
