@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/demo4.dir/main.cc.o  -o demo4 -rdynamic math/libMathFunctions.a 

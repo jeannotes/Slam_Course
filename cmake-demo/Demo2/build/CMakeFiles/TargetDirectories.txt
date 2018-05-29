@@ -1,3 +1,0 @@
-/home/jean/Documents/code/cmake-demo/Demo2/build/CMakeFiles/edit_cache.dir
-/home/jean/Documents/code/cmake-demo/Demo2/build/CMakeFiles/rebuild_cache.dir
-/home/jean/Documents/code/cmake-demo/Demo2/build/CMakeFiles/demo2.dir

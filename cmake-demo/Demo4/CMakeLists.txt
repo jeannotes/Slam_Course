@@ -14,8 +14,7 @@ include_directories("${PROJECT_BINARY_DIR}")
 
 if(use_math)
   add_subdirectory(math)
-  #include_directories(math)
-  # well seems no need to add this .
+  #include_directories("math")
   set(extra ${extra} MathFunctions)
 endif(use_math)
 

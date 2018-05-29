@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/demo2.dir/main.cc.o CMakeFiles/demo2.dir/MathFunctions.cc.o  -o demo2 -rdynamic 
