@@ -1,4 +1,4 @@
-# Install script for directory: /home/jean/Documents/learning/Slam_Course/SLAM14Lectures/video_lectures/2/my_solution
+# Install script for directory: /home/jean/Documents/Slam_Course/SLAM14Lectures/video_lectures/2/my_solution
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/jean/Documents/learning/Slam_Course/SLAM14Lectures/video_lectures/2/my_solution/b/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/jean/Documents/Slam_Course/SLAM14Lectures/video_lectures/2/my_solution/b/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

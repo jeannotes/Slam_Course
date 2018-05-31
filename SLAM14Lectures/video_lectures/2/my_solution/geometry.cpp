@@ -18,8 +18,12 @@ int main( int argc, char** argv )
     
     //way1
     
-    Eigen::Vector3d v = q1_one.inverse() * (p1 - t1);
-    Eigen::Vector3d v2 = q2_one * v + t2;
-    cout << "way1 v2 = " << endl << v2 << endl;
+    Eigen::Vector3d v = q1_one.inverse() * (p1 - t1); 
+    /** first translation
+     * first translation, qi_one is world to camera
+     * (p1 - t1) is in camera coordinate, after that , it is in world coordinator
+     * so , we can use the same way to compute another point
+     */ 
+
     return 0;
 }

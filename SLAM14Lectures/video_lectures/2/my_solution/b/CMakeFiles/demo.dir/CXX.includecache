@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/jean/Documents/learning/Slam_Course/SLAM14Lectures/video_lectures/2/my_solution/geometry.cpp
+/home/jean/Documents/Slam_Course/SLAM14Lectures/video_lectures/2/my_solution/geometry.cpp
 iostream
 -
 Eigen/Core
