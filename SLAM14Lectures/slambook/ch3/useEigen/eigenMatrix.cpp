@@ -52,6 +52,7 @@ int main( int argc, char** argv )
     // Eigen::Matrix<double, 2, 1> result_wrong_type = matrix_23 * v_3d;
     // 应该显式转换
     Eigen::Matrix<double, 2, 1> result = matrix_23.cast<double>() * v_3d;
+    
     cout << result << endl;
 
     Eigen::Matrix<float, 2, 1> result2 = matrix_23 * vd_3d;
@@ -98,6 +99,6 @@ int main( int argc, char** argv )
     time_stt = clock();
     x = matrix_NN.colPivHouseholderQr().solve(v_Nd);
     cout <<"time use in Qr decomposition is " <<1000*  (clock() - time_stt)/(double)CLOCKS_PER_SEC <<"ms" << endl;
-
+    
     return 0;
 }
