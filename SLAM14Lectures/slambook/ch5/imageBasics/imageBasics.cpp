@@ -62,7 +62,7 @@ int main ( int argc, char** argv )
     // 使用clone函数来拷贝数据
     cv::Mat image_clone = image.clone();
     image_clone ( cv::Rect ( 0,0,100,100 ) ).setTo ( 255 );
-    cv::imshow ( "image", image );
+    //cv::imshow ( "image", image );
     cv::imshow ( "image_clone", image_clone );
     cv::waitKey ( 0 );
 
