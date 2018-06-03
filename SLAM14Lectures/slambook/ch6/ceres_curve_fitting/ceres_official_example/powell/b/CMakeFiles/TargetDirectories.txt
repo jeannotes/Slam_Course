@@ -1,3 +1,0 @@
-/home/jean/Documents/ceres/1/b/CMakeFiles/edit_cache.dir
-/home/jean/Documents/ceres/1/b/CMakeFiles/rebuild_cache.dir
-/home/jean/Documents/ceres/1/b/CMakeFiles/demo.dir
