@@ -1,3 +1,0 @@
-/home/jean/Documents/learning/Slam_Course/SLAM14Lectures/slambook/ch6/g2o_curve_fitting/original/build/CMakeFiles/edit_cache.dir
-/home/jean/Documents/learning/Slam_Course/SLAM14Lectures/slambook/ch6/g2o_curve_fitting/original/build/CMakeFiles/rebuild_cache.dir
-/home/jean/Documents/learning/Slam_Course/SLAM14Lectures/slambook/ch6/g2o_curve_fitting/original/build/CMakeFiles/curve_fitting.dir
