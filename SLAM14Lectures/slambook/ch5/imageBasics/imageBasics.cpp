@@ -5,6 +5,57 @@ using namespace std;
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+int main(int argc, char **argv)
+{
+    cv::Mat image;
+    image = cv::imread(argv[1]);
+    if (image.data == nullptr)
+    {
+        cerr << "does not exist" << endl;
+        return 0;
+    }
+    cout << "width: " << image.cols << "height: " << image.rows << "chanels: " << image.channels() << endl;
+    if (image.type() != CV_8UC1 && image.type() != CV_8UC3)
+    {
+        cerr << "color image or gray image" << endl;
+    }
+
+    chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
+
+    for ( size_t y = 0 ; y < image.rows; y++){
+        for (size_t x = 0; x < image.cols; x++){
+            unsigned char* row_ptr = image.ptr<unsigned char> (y);
+            unsigned char* data_ptr = &row_ptr[x* image.channels()];
+            for (int c =0; c < image.channels(); c++){
+                auto data = data_ptr[c];
+            }
+        }
+    }
+
+    chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
+
+    chrono::duration<double> time_used = chrono::duration_cast<chrono::duration<double>>(t2-t1);
+
+    cv::Mat image_another = image;
+    image_another(cv::Rect(0,0,100,100)).setTo(0);
+    cv::imshow("image",image_another);
+    cv::waitKey(0);
+
+    image_another(cv::Rect(0,0,100,100)).setTo(255);
+    cv::imshow("image1",image_another);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+    return 0;
+}
+/*
+
+#include <iostream>
+#include <chrono>
+using namespace std;
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 int main ( int argc, char** argv )
 {
     // 读取argv[1]指定的图像
@@ -70,3 +121,5 @@ int main ( int argc, char** argv )
     cv::destroyAllWindows();
     return 0;
 }
+
+*/
