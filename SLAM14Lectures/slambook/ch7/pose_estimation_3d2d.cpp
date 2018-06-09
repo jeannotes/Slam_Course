@@ -148,6 +148,10 @@ void bundleAdjustment(
 {
     // 初始化g2o
     typedef g2o::BlockSolver<g2o::BlockSolverTraits<6, 3>> Block;                                  // pose 维度为 6, landmark 维度为 3
+    /**
+     * this explain is not good, here we have landmark, but if we do it in 3d-3d, we 
+     * find that if we change 3 to number <=3, it is still ok.
+    */
     Block::LinearSolverType *linearSolver = new g2o::LinearSolverCSparse<Block::PoseMatrixType>(); // 线性方程求解器
     Block *solver_ptr = new Block(linearSolver);                                                   // 矩阵块求解器
     g2o::OptimizationAlgorithmLevenberg *solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);

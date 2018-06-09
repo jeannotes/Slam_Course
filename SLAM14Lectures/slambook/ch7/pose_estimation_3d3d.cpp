@@ -308,5 +308,4 @@ void bundleAdjustment (
 
     cout<<endl<<"after optimization:"<<endl;
     cout<<"T="<<endl<<Eigen::Isometry3d( pose->estimate() ).matrix()<<endl;
-
 }
