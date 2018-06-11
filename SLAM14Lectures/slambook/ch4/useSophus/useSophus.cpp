@@ -64,6 +64,9 @@ int main(int argc, char **argv)
     Sophus::SE3 SE3_updated = Sophus::SE3::exp(update_se3) * SE3_Rt;
     cout << "SE3 updated = " << endl
          << SE3_updated.matrix() << endl;
-
+    /**
+     * attention: Sophus::SE3 or Sophus::SO3 returns the matrix ,which is lie group
+     * and its internal function ".log" returns the vector, which is lie algebra
+    */
     return 0;
 }

@@ -194,6 +194,15 @@ void bundleAdjustment(
         edge->setId(index);
         edge->setVertex(0, dynamic_cast<g2o::VertexSBAPointXYZ *>(optimizer.vertex(index)));
         edge->setVertex(1, pose);
+        /**
+         * in types_six_dof_expmap.h, it already has set what v1 and v2 means, 
+         * v1: pose, atfer using map this function, we find that it does somt translation
+         * attention, it is world, still 3d, if don't care, this R is identitical and t is 0
+         * and now we have standard 3d data, aligned!
+         * to sum it up: points_3d_1 = R * points_3d_1 + t
+         * then the cam_map is what we should care, this is 
+         * points_2d = K * points_3d_1
+         * **/
         edge->setMeasurement(Eigen::Vector2d(p.x, p.y));
         edge->setParameterId(0, 0);
         edge->setInformation(Eigen::Matrix2d::Identity());

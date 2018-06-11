@@ -81,6 +81,9 @@ public:
         _jacobianOplusXi(2,3) = 0;
         _jacobianOplusXi(2,4) = 0;
         _jacobianOplusXi(2,5) = -1;
+        /**
+         * todo: understand how this comes !
+        */
     }
 
     bool read ( istream& in ) {}
