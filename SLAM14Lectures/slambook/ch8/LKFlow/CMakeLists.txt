@@ -4,7 +4,7 @@ project( useLK )
 set( CMAKE_BUILD_TYPE Release )
 set( CMAKE_CXX_FLAGS "-std=c++11 -O3" )
 
-find_package( OpenCV )
+find_package( OpenCV 3.4 PATHS "/usr/local/opencv-3.4.1/share/OpenCV" )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 add_executable( useLK useLK.cpp )

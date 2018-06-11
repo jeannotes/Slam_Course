@@ -139,6 +139,14 @@ protected:
     inline float getPixelValue ( float x, float y )
     {
         uchar* data = & image_->data[ int ( y ) * image_->step + int ( x ) ];
+        /**
+         * now I think I understand this, data is a pointer to the first point 
+         * image->step: how many points in a single line
+         * starting at (int ( y ) * image_->step + int ( x )), so the meaning is 
+         *                 data[0]            data[1]
+         *          data[image_->step]   data[image_->step+1]
+         *  and the amazing part is data[image_->step] is the next line which is below under data[0]
+        */
         float xx = x - floor ( x );
         float yy = y - floor ( y );
         return float (
