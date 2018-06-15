@@ -9,6 +9,7 @@ cc_library(
 cc_binary(
     name = "hello-world",
     srcs = ["hello-world.cc"],
+    includes=["include"],
     deps = [
         ":hello-greet",
     ],
@@ -17,10 +18,11 @@ cc_binary(
 cc_test(
     name = "gtest",
     srcs = [
-        "test.cc",
-        "include/hello-greet.h",
+        "test.cc"
+        #"include/hello-greet.h",
     ],
-    includes=["include"],
+    #hdrs = [""]
+    #includes=["include"],
     copts = ["-Iexternal/gtest/include"],
     deps = ["@gtest//:gtest_main", ":hello-greet"],
 )
