@@ -293,6 +293,7 @@ void bundleAdjustment (
             Eigen::Vector3d(pts2[i].x, pts2[i].y, pts2[i].z) );
         edge->setId( index );
         edge->setVertex( 0, dynamic_cast<g2o::VertexSE3Expmap*> (pose) );
+        // only one side, so there is only 0, if there is point , need to setVertex(1, ....)
         edge->setMeasurement( Eigen::Vector3d(
             pts1[i].x, pts1[i].y, pts1[i].z) );
         edge->setInformation( Eigen::Matrix3d::Identity()*1e4 );
