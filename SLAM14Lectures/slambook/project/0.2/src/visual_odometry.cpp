@@ -145,7 +145,7 @@ void VisualOdometry::setRef3DPoints()
     descriptors_ref_ = Mat();
     for ( size_t i=0; i<keypoints_curr_.size(); i++ )
     {
-        double d = ref_->findDepth(keypoints_curr_[i]);               
+        double d = ref_->findDepth(keypoints_curr_[i]);
         if ( d > 0)
         {
             Vector3d p_cam = ref_->camera_->pixel2camera(

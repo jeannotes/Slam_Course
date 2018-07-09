@@ -70,7 +70,7 @@ double Frame::findDepth ( const cv::KeyPoint& kp )
     return -1.0;
 }
 
-void Frame::setPose ( const SE3& T_c_w )
+void Frame::setPose( const SE3& T_c_w )
 {
     T_c_w_ = T_c_w;
 }

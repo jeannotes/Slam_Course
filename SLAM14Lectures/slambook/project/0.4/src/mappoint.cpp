@@ -42,7 +42,7 @@ MapPoint::Ptr MapPoint::createMapPoint()
     );
 }
 
-MapPoint::Ptr MapPoint::createMapPoint ( 
+MapPoint::Ptr MapPoint::createMapPoint( 
     const Vector3d& pos_world, 
     const Vector3d& norm, 
     const Mat& descriptor, 
