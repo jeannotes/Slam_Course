@@ -217,7 +217,7 @@ void VisualOdometry::poseEstimationPnP()
         edge->setMeasurement ( Vector2d ( pts2d[index].x, pts2d[index].y ) );
         edge->setInformation ( Eigen::Matrix2d::Identity() );
         optimizer.addEdge ( edge );
-        // set the inlier map points 
+        // set the inlier map points
         match_3dpts_[index]->matched_times_++;
     }
 
