@@ -191,11 +191,16 @@ void BALProblem::CameraToAngelAxisAndCenter(const double* camera,
     if(use_quaternions_){
       QuaternionToAngleAxis(camera, angle_axis);
     }else{
+	  // https://eigen.tuxfamily.org/dox/classEigen_1_1Map.html
+	  // get the first 3 element
       angle_axis_ref = ConstVectorRef(camera,3);
     }
 
     // c = -R't
+    // parameter: R -> T -> K
+    // attention, here R&T is still world to camera
     Eigen::VectorXd inverse_rotation = -angle_axis_ref;
+	// https://blog.csdn.net/robinhjwy/article/details/78189096
     AngleAxisRotatePoint(inverse_rotation.data(),
                          camera + camera_block_size() - 6,
                          center);
@@ -223,6 +228,8 @@ void BALProblem::Normalize(){
   std::vector<double> tmp(num_points_);
   Eigen::Vector3d median;
   double* points = mutable_points();
+  // maybe  first half part is camera para
+  // next is points
   for(int i = 0; i < 3; ++i){
     for(int j = 0; j < num_points_; ++j){
       tmp[j] = points[3 * j + i];      
@@ -232,7 +239,7 @@ void BALProblem::Normalize(){
 
   for(int i = 0; i < num_points_; ++i){
     VectorRef point(points + 3 * i, 3);
-    tmp[i] = (point - median).lpNorm<1>();
+    tmp[i] = (point - median).lpNorm<1>();// subtract the median value
   }
 
   const double median_absolute_deviation = Median(&tmp);
@@ -255,7 +262,11 @@ void BALProblem::Normalize(){
     double* camera = cameras + camera_block_size() * i;
     CameraToAngelAxisAndCenter(camera, angle_axis, center);
     // center = scale * (center - median)
+    // now, the center is under world coordinate
+    // it first translate camera coordinate to world coordinate,
+    //and meanwhile scale, get a new world coordinate, so we need to update translation
     VectorRef(center,3) = scale * (VectorRef(center,3)-median);
+	// update translation
     AngleAxisAndCenterToCamera(angle_axis, center,camera);
   }
 }

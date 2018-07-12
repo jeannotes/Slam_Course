@@ -14,8 +14,8 @@ public:
     SnavelyReprojectionError(double observation_x, double observation_y):observed_x(observation_x),observed_y(observation_y){}
 
 template<typename T>
-    bool operator()(const T* const camera,
-                const T* const point,
+    bool operator()( T* camera,
+                 T* point,
                 T* residuals)const{                  
         // camera[0,1,2] are the angle-axis rotation
         T predictions[2];
