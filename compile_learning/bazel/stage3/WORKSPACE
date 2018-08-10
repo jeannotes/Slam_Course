@@ -1,6 +1,6 @@
 local_repository(
     name = "stage2",
-    path = "/home/jean/examples/cpp-tutorial/stage2",
+    path = "/home/jean/Documents/learning/Slam_Course/compile_learning/bazel/stage2",
 )
 
 bind(

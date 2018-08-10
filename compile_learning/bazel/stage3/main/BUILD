@@ -10,7 +10,7 @@ cc_binary(
 cc_test(
     name = "mytest",
     srcs = ["test.cc"],
-    copts = ["-Iexternal/gtest/include"],
+    #copts = ["-Iexternal/gtest/include"],
     deps = [
         "//external:stage2_",
         "@gtest//:gtest",
