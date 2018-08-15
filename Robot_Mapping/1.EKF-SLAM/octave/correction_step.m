@@ -8,11 +8,11 @@ function [mu, sigma, observedLandmarks] = correction_step(mu, sigma, z, observed
 % z: struct array containing the landmark observations.
 % Each observation z(i) has an id z(i).id, a range z(i).range, and a bearing z(i).bearing
 % The vector observedLandmarks indicates which landmarks have been observed
-% at some point by the robot. observedLandmarks(j) is false if the landmark with id = j has never been observed before.
+% at some point by the robot.
+% observedLandmarks(j) is false if the landmark with id = j has never been observed before.
 
 % Number of measurements in this time step
 m = size(z, 2);
-n = numel(mu);
 
 % Z: vectorized form of all measurements made in this time step: [range_1; bearing_1; range_2; bearing_2; ...; range_m; bearing_m]
 % ExpectedZ: vectorized form of all expected measurements in the same form.
@@ -23,59 +23,53 @@ expectedZ = zeros(m*2, 1);
 % Iterate over the measurements and compute the H matrix
 % (stacked Jacobian blocks of the measurement function)
 % H will be 2m x 2N+3
-H = []; %zeros(2*m, n);
+H = [];
 
 for i = 1:m
-    % Get the id of the landmark corresponding to the i-th observation
-    j = z(i).id;
-    % If the landmark is obeserved for the first time:
-    if(observedLandmarks(j)==false)
-        % TODO: Initialize its pose in mu based on the measurement and the current robot pose
-        mu(3+2*j-1)   = mu(1) + z(i).range * cos(z(i).bearing + mu(3));
-        mu(3+2*j)     = mu(2) + z(i).range * sin(z(i).bearing + mu(3));
-        % Indicate in the observedLandmarks vector that this landmark has been observed
-        observedLandmarks(j) = true;
-        endif
+	% Get the id of the landmark corresponding to the i-th observation
+	landmarkId = z(i).id;
+	% If the landmark is obeserved for the first time:
+	% mu_bar_i = [mu(2*landmarkId+2); mu(2*landmarkId+3)];
+  if(observedLandmarks(landmarkId)==false)
+		% TODO: Initialize its pose in mu based on the measurement and the current robot pose:
+		mu(2*landmarkId+2:2*landmarkId+3) = mu(1:2) + [z(i).range*cos(mu(3) + z(i).bearing);
+                            z(i).range*sin(mu(3) + z(i).bearing)];
+		% Indicate in the observedLandmarks vector that this landmark has been observed
+		observedLandmarks(landmarkId) = true;
+	endif
 
-        % TODO: Add the landmark measurement to the Z vector
-        Z(2*i-1) = z(i).range; Z(2*i) = z(i).bearing;
+	% TODO: Add the landmark measurement to the Z vector
+	Z(2*i-1:2*i) = [z(i).range;
+                  z(i).bearing];
+	% TODO: Use the current estimate of the landmark pose
+	% to compute the corresponding expected measurement in expectedZ:
+  delta = mu(2*landmarkId+2:2*landmarkId+3) - mu(1:2);
+  q = transpose(delta) * delta;
+  expectedZ(2*i-1:2*i) = [sqrt(q);
+                          atan2(delta(2),delta(1)) - mu(3)];
+	% TODO: Compute the Jacobian Hi of the measurement function h for this observation
+  Hi = [-sqrt(q) * delta', 0;
+        delta(2), -delta(1), -q];
+  Hi = [Hi,zeros(2, size(sigma,1)-3)];
+  Hi(:,2*landmarkId+2:2*landmarkId+3) = [sqrt(q) * delta';
+                    -delta(2), delta(1)];
+  Hi = Hi / q;
+	% Augment H with the new Hi
+	H = [H;Hi];	% 2m x 2N+3
+endfor
 
-        % TODO: Use the current estimate of the landmark pos	
-        % to compute the corresponding expected measurement in expectedZ:
-        dx = mu(3+2*j-1) - mu(1); dy = mu(3+2*j) - mu(2);
-        dsq = dx^2 + dy^2; d  = sqrt(dsq); 
-        expectedZ(2*i-1)   = d;
-        expectedZ(2*i)     = atan2(dy, dx) - mu(3);
+% TODO: Construct the sensor noise matrix Q
+var = 0.01;
+Qt = eye(2*m) * var;  % Q: 2m-by-2m
+% TODO: Compute the Kalman gain
+K = sigma * H' * inv(Qt + H * sigma * H'); % K; 2N+3 * 2m
+% TODO: Compute the difference between the expected and recorded measurements.
+% Remember to normalize the bearings after subtracting!
+% (hint: use the normalize_all_bearings function available in tools)
 
-        % TODO: Compute the Jacobian Hi of the measurement function h for this observation
-        Hi = zeros(2, n);
-        Hi(1,1) = -dx/d;   Hi(1,2) = -dy/d;
-        Hi(2,1) =  dy/dsq; Hi(2,2) = -dx/dsq;
-        Hi(2,3) = -1;
-        Hi(:,3+2*j-1:3+2*j) = -Hi(:,1:2);
-
-        % Augment H with the new Hi
-        H = [H;Hi];	
-        endfor
-
-        % TODO: Construct the sensor noise matrix Q
-        Q  = 0.01 * eye(2 * m);
-
-        % TODO: Compute the Kalman gain
-        K = sigma * H' * inv(H * sigma * H' + Q);
-
-        % TODO: Compute the difference between the expected and recorded measurements.
-        % Remember to normalize the bearings after subtracting!
-        % (hint: use the normalize_all_bearings function available in tools)
-        zdiff = normalize_all_bearings(Z - expectedZ);
-
-        % TODO: Finish the correction step by computing the new mu and sigma.
-        % Normalize theta in the robot pose.
-        %size(K)
-        %m
-        %size(Z)
-        %size(mu)
-        mu = mu + K * zdiff;
-        sigma = (eye(n) - K * H)*sigma;
-
+% TODO: Finish the correction step by computing the new mu and sigma.
+% Normalize theta in the robot pose.
+mu = mu + K * normalize_all_bearings(Z - expectedZ);
+mu(3) = normalize_angle(mu(3));
+sigma = (eye(size(sigma,1)) - K * H) * sigma;
 end

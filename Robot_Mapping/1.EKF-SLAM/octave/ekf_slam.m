@@ -45,24 +45,25 @@ mapSigma = INF*eye(2*N);
 sigma = [[robSigma robMapSigma];[robMapSigma' mapSigma]];
 
 % toogle the visualization type
-%showGui = true;  % show a window while the algorithm runs
-showGui = false; % plot to files instead
+showGui = true;  % show a window while the algorithm runs
+%showGui = false; % plot to files instead
 
 % Perform filter update for each odometry-observation pair read from the
 % data file.
 for t = 1:size(data.timestep, 2)
-%1for t = 1:80
+%for t = 1:10
 
     % Perform the prediction step of the EKF
     [mu, sigma] = prediction_step(mu, sigma, data.timestep(t).odometry);
-
+    %disp(size(data.timestep(t).sensor,2))
     % Perform the correction step of the EKF
     [mu, sigma, observedLandmarks] = correction_step(mu, sigma, data.timestep(t).sensor, observedLandmarks);
 
     %Generate visualization plots of the current state of the filter
     plot_state(mu, sigma, landmarks, t, observedLandmarks, data.timestep(t).sensor, showGui);
-    %disp("Current state vector:")
-    %disp("mu = "), disp(mu)
+    disp("Current state vector:")
+    disp("mu = "), disp(mu)
+
 endfor
 
 disp("Final system covariance matrix:"), disp(sigma)
