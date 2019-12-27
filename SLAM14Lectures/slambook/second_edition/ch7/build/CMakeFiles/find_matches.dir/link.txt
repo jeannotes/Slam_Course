@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfind_matches.a  CMakeFiles/find_matches.dir/find_matches.cpp.o
+/usr/bin/ranlib libfind_matches.a

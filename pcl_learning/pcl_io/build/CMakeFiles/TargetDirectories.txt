@@ -1,3 +1,0 @@
-/home/jean/Documents/learning/Slam_Course/pcl_learning/pcl_io/build/CMakeFiles/edit_cache.dir
-/home/jean/Documents/learning/Slam_Course/pcl_learning/pcl_io/build/CMakeFiles/rebuild_cache.dir
-/home/jean/Documents/learning/Slam_Course/pcl_learning/pcl_io/build/CMakeFiles/cloud_viewer.dir
