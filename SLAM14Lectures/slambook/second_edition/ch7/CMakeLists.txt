@@ -48,21 +48,23 @@ target_link_libraries(triangulation ${OpenCV_LIBS})
 
 add_executable(pose_estimation_3d2d pose_estimation_3d2d.cpp)
 target_link_libraries(pose_estimation_3d2d ${CSPARSE_LIBRARY}
-        g2o_core g2o_stuff g2o_types_sba g2o_csparse_extension 
+                      g2o_core g2o_stuff g2o_types_sba g2o_csparse_extension 
                       ${GFLAGS_LIBRARIES}
-      ${GLOG_LIBRARIES}
-     find_matches
-        ${OpenCV_LIBS})
+                      ${GLOG_LIBRARIES}
+                      find_matches
+                      ${OpenCV_LIBS})
+
 add_executable(pose_estimation_3d3d pose_estimation_3d3d.cpp)
-target_link_libraries(pose_estimation_3d3d
-      ${CSPARSE_LIBRARY}
-        g2o_core g2o_stuff g2o_types_sba g2o_csparse_extension
-        ${GLOG_LIBRARIES} 
-        ${OpenCV_LIBS})
+target_link_libraries(  pose_estimation_3d3d
+                        ${CSPARSE_LIBRARY}
+                        g2o_core g2o_stuff g2o_types_sba g2o_csparse_extension
+                        ${GLOG_LIBRARIES} 
+                        ${OpenCV_LIBS})
 
 add_executable( feature_extraction feature_extraction.cpp  )
 target_link_libraries( feature_extraction
                        ${OpenCV_LIBS}
                        ${GFLAGS_LIBRARIES} 
                        ${GLOG_LIBRARIES}
+                       find_matches
                       )

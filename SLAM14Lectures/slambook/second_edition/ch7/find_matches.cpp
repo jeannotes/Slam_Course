@@ -4,46 +4,31 @@ using namespace std;
 using namespace cv;
 
 int find_matches(const Mat img_1, const Mat img_2,
-                 vector<KeyPoint> &keypoints1,
-                 vector<KeyPoint> &keypoints2,
+                 vector<KeyPoint> &keypoints1, vector<KeyPoint> &keypoints2,
                  vector<DMatch> &good_matches)
 {
-    //detect
+    // detect
     Ptr<ORB> detector = ORB::create();
     detector->detect(img_1, keypoints1);
     detector->detect(img_2, keypoints2);
-    //debug - draw points
-    // drawKeypoints(img_1, keypoints1, img_1);
-    // imshow("debug", img_1);
-    // waitKey(0);
-    //descriptor
+    // descriptor
     Ptr<DescriptorExtractor> descriptor = ORB::create();
     Mat descriptors1, descriptors2;
     descriptor->compute(img_1, keypoints1, descriptors1);
     descriptor->compute(img_2, keypoints2, descriptors2);
-    // matcher
+    // match
     Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce-Hamming");
     vector<DMatch> matches;
     matcher->match(descriptors1, descriptors2, matches);
-    // Mat all_matches_img;
-    // drawMatches(img_1, keypoints1, img_2, keypoints2, matches, all_matches_img);
-    // imshow("all-matches", all_matches_img);
-    // waitKey(0);
-    // get min&max distance
+    // find good match
     auto min_max = std::minmax_element(matches.begin(), matches.end(),
                                        [](const DMatch &m1, const DMatch &m2) { return m1.distance < m2.distance; });
-    for (int i = 0; i < matches.size(); i++)
+
+    for (const DMatch m1 : matches)
     {
-        if (matches[i].distance < std::max(30.0, double(2 * min_max.first->distance)))
-        {
-            good_matches.push_back(matches[i]);
-        }
+        if (m1.distance < std::max(30.0, double(2.0 * min_max.first->distance)))
+            good_matches.push_back(m1);
     }
-    //now we have good matches
-    // Mat all_matches_img;
-    // drawMatches(img_1, keypoints1, img_2, keypoints2, good_matches, all_matches_img);
-    // imshow("all-matches", all_matches_img);
-    // waitKey(0);
 }
 
 int find_corresponding_points(const Mat depth1,
