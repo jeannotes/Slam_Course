@@ -1,5 +1,0 @@
-/code_practise/slambook2/ch7/build/CMakeFiles/edit_cache.dir
-/code_practise/slambook2/ch7/build/CMakeFiles/find_matches.dir
-/code_practise/slambook2/ch7/build/CMakeFiles/rebuild_cache.dir
-/code_practise/slambook2/ch7/build/CMakeFiles/orb_cv.dir
-/code_practise/slambook2/ch7/build/CMakeFiles/triangulation.dir

@@ -1,6 +1,0 @@
-/code_practise/slambook2/ch6/build/CMakeFiles/rebuild_cache.dir
-/code_practise/slambook2/ch6/build/CMakeFiles/ceresCurveFitting.dir
-/code_practise/slambook2/ch6/build/CMakeFiles/simple_bundle_adjuster.dir
-/code_practise/slambook2/ch6/build/CMakeFiles/bundle_adjuster.dir
-/code_practise/slambook2/ch6/build/CMakeFiles/edit_cache.dir
-/code_practise/slambook2/ch6/build/CMakeFiles/g2oCurveFitting.dir
