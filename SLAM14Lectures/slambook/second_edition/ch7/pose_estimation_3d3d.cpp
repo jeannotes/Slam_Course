@@ -86,8 +86,7 @@ protected:
     Eigen::Vector3d _point;
 };
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     if (argc != 5)
     {
@@ -134,7 +133,7 @@ main(int argc, char **argv)
 
     cout << "calling bundle adjustment" << endl;
 
-    bundleAdjustment( pts1, pts2, R, t );
+    bundleAdjustment(pts1, pts2, R, t);
 
     // // verify p1 = R*p2 + t
     // for ( int i=0; i<5; i++ )
@@ -269,7 +268,7 @@ void bundleAdjustment(
     typedef g2o::BlockSolver<g2o::BlockSolverTraits<6, 3>> Block;
     Block::LinearSolverType *linearSolver = new g2o::LinearSolverEigen<Block::PoseMatrixType>();
     Block *solver_ptr = new Block(linearSolver);
-    g2o::OptimizationAlgorithmGaussNewton* solver = new g2o::OptimizationAlgorithmGaussNewton( solver_ptr );
+    g2o::OptimizationAlgorithmGaussNewton *solver = new g2o::OptimizationAlgorithmGaussNewton(solver_ptr);
     g2o::SparseOptimizer optimizer;
     optimizer.setAlgorithm(solver);
     //add vertex
@@ -283,8 +282,7 @@ void bundleAdjustment(
     for (int i = 0; i < pts1.size(); i++)
     {
         EdgeProjectXYZRGBDPoseOnly *edge = new EdgeProjectXYZRGBDPoseOnly(
-            Eigen::Vector3d(pts2[i].x,pts2[i].y,pts2[i].z )
-        );
+            Eigen::Vector3d(pts2[i].x, pts2[i].y, pts2[i].z));
         edge->setId(index);
         edge->setInformation(Eigen::Matrix3d::Identity() * 1e4);
         edge->setMeasurement(Eigen::Vector3d(pts1[i].x, pts1[i].y, pts1[i].z));

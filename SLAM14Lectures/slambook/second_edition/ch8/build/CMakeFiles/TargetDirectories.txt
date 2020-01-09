@@ -1,5 +1,0 @@
-/code_practise/slambook2/ch8/build/CMakeFiles/edit_cache.dir
-/code_practise/slambook2/ch8/build/CMakeFiles/direct_method.dir
-/code_practise/slambook2/ch8/build/CMakeFiles/optical_flow.dir
-/code_practise/slambook2/ch8/build/CMakeFiles/gaussNewton.dir
-/code_practise/slambook2/ch8/build/CMakeFiles/rebuild_cache.dir
